@@ -18,16 +18,37 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     
-        myTimer.startTimer(time: 100)
+        myTimer.startTimer(time: 20)
+        myTimer.delegate = self
     }
-
-    
-    
-    
   
     @IBAction func buttonTapped(_ sender: UIButton) {
         print("button works")
     }
     
+    func updateLabelAndButotn() {
+        timerLabel.text = myTimer.timeLeftAsString()
+        var title = "Start Nap"
+        if myTimer.isOn {
+            title = "stop"
+        }
+        timerButton.setTitle(title, for: .normal)
+    }
+    
 }
 
+extension ViewController: MyTimerDelegate {
+    func timerSecondTicked() {
+        updateLabelAndButotn()
+    }
+    
+    func timerHasStopped() {
+       updateLabelAndButotn()
+    }
+    
+    func timerHasCompleted() {
+        updateLabelAndButotn()
+    }
+    
+    
+}

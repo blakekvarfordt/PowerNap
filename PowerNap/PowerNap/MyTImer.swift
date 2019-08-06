@@ -8,9 +8,16 @@
 
 import Foundation
 
+protocol MyTimerDelegate: class {
+    func timerSecondTicked()
+    func timerHasStopped()
+    func timerHasCompleted()
+}
 
 class MyTimer {
-    var timer: Timer?
+    private var timer: Timer?
+    
+    weak var delegate: MyTimerDelegate?
     
     var timeLeft: TimeInterval?
     var isOn: Bool {
@@ -32,8 +39,36 @@ class MyTimer {
         }
     }
     
-    func secondTicked() {
+    func stopTimer() {
+        self.timeLeft = nil
+        timer?.invalidate()
+        print("stop timer")
+        delegate?.timerHasStopped()
+    }
+    
+    func timeLeftAsString() -> String {
+        let timeRemaining = Int(self.timeLeft ?? 20 * 60)
+        let minutesLeft = timeRemaining / 60
+        let secondsLeft = timeRemaining - (minutesLeft * 60)
+        return String(format: "%02d : %02d", [minutesLeft, secondsLeft])
+    }
+    
+    private func secondTicked() {
+        guard let timeLeft = timeLeft else {
+            print("time left is not set up")
+            return
+        }
         
+        if timeLeft > 0 {
+            self.timeLeft = timeLeft - 1
+            print(self.timeLeftAsString())
+            delegate?.timerSecondTicked()
+        } else {
+            self.timeLeft = nil
+            timer?.invalidate()
+            print("stop timer")
+            delegate?.timerHasCompleted()
+        }
     }
     
 }
